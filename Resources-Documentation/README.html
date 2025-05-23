@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoadBalancer.DistributedAlgorithms2 Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+        pre, code {
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 10px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffeb3b;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>LoadBalancer.DistributedAlgorithms2</h1>
+    <p>Welcome to the <strong>LoadBalancer.DistributedAlgorithms2</strong> project! This is a fun and educational distributed system built with .NET 9, designed to explore load balancing, fault tolerance, and monitoring. Created on May 23, 2025, at 01:56 PM EEST, this project balances computational tasks across multiple worker nodes, caches results with Redis, and tracks performance with Prometheus and Grafana—all running in Docker containers. Whether you're a student, developer, or just curious, dive in and play around!</p>
+
+    <h2>Overview</h2>
+    <p>This project simulates a distributed system where a load balancer distributes calculation requests to worker nodes. It’s powered by:
+    <ul>
+        <li>A single .NET 9 codebase that runs as either a load balancer or worker (controlled by an environment variable).</li>
+        <li>Redis for caching results to boost performance.</li>
+        <li>Prometheus for collecting metrics and Grafana for visualizing them.</li>
+    </ul>
+    The system is fault-tolerant—if a worker fails, the load balancer reroutes tasks—and it’s all containerized with Docker for easy setup.</p>
+
+    <h2>Features</h2>
+    <ul>
+        <li><strong>Load Balancing</strong>: Distributes tasks to three worker instances.</li>
+        <li><strong>Fault Tolerance</strong>: Uses Polly for retry and circuit breaker logic to handle failures.</li>
+        <li><strong>Caching</strong>: Stores results in Redis to avoid redundant calculations.</li>
+        <li><strong>Monitoring</strong>: Tracks metrics with Prometheus and visualizes them in Grafana.</li>
+        <li><strong>Dockerized</strong>: Runs everything in containers for portability.</li>
+    </ul>
+
+    <h2>Getting Started</h2>
+
+    <h3>Prerequisites</h3>
+    <p>Before you start, make sure you have:</p>
+    <ul>
+        <li><strong>Docker Desktop</strong>: Installed on Windows (with WSL2 backend enabled).</li>
+        <li><strong>.NET 9 SDK</strong> (optional): Useful for local development, though Docker handles builds.</li>
+        <li><strong>PowerShell or Command Prompt</strong>: For running commands.</li>
+    </ul>
+
+    <h3>Installation</h3>
+    <ol>
+        <li><strong>Clone the Repository</strong>:
+            <pre><code>git clone https://github.com/your-username/LoadBalancer.DistributedAlgorithms2.git
+cd LoadBalancer.DistributedAlgorithms2</code></pre>
+        </li>
+        <li><strong>Build and Run</strong>:
+            <pre><code>docker-compose down --rmi all
+docker system prune -a -f
+docker-compose up --build</code></pre>
+            <p>This pulls images (Redis 7.2, Prometheus, Grafana) and builds the app. First run might take a few minutes.</p>
+        </li>
+        <li><strong>Verify</strong>:
+            <p>Check the terminal for logs. You’ll see Redis starting, followed by the app logs. If it fails, peek at the troubleshooting section below.</p>
+        </li>
+    </ol>
+
+    <h2>Usage</h2>
+
+    <h3>Testing the System</h3>
+    <p>Once running, try these commands:</p>
+    <ul>
+        <li><strong>Run a Calculation</strong>:
+            <pre><code>curl "http://localhost:3000/api/calculation/cal?n=1"</code></pre>
+            <p>Expect a JSON response with a result and timestamp (around 01:56 PM EEST today).</p>
+        </li>
+        <li><strong>Check Worker Health</strong>:
+            <pre><code>curl http://localhost:5002/health</code></pre>
+            <p>Should return HTTP 200 if the worker’s healthy.</p>
+        </li>
+        <li><strong>View Metrics</strong>:
+            <pre><code>curl http://localhost:3000/metrics</code></pre>
+            <p>Raw Prometheus data. Open <a href="http://localhost:9090" target="_blank">http://localhost:9090</a> in your browser to explore.</p>
+        </li>
+        <li><strong>Simulate Failure</strong>:
+            <pre><code>docker-compose stop worker2</code></pre>
+            <p>Send another request; it should route to another worker.</p>
+        </li>
+        <li><strong>Monitoring</strong>:
+            <ul>
+                <li><strong>Prometheus</strong>: Visit <a href="http://localhost:9090/targets" target="_blank">http://localhost:9090/targets</a> to see scraped targets.</li>
+                <li><strong>Grafana</strong>: Go to <a href="http://localhost:3001" target="_blank">http://localhost:3001</a>, log in with <code>admin/admin</code>, set a new password, and add a data source (Prometheus URL: <code>http://prometheus:9090</code>). Create a dashboard with queries like <code>rate(calculation_requests_total[5m])</code>.</li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Stopping</strong>:
+        <pre><code>docker-compose down</code></pre>
+    </p>
+
+    <h3>Project Structure</h3>
+    <ul>
+        <li><code>LoadBalancer/</code>: Contains the .NET 9 code (e.g., <code>Program.cs</code>, <code>Dockerfile</code>, <code>Controllers/</code>).</li>
+        <li><code>prometheus/</code>: Holds <code>prometheus.yml</code> for monitoring config.</li>
+        <li><code>docker-compose.yml</code>: Defines all services and their configurations.</li>
+    </ul>
+
+    <h2>Troubleshooting</h2>
+    <ul>
+        <li><strong>Prometheus Mount Errors</strong>:
+            <p>If Prometheus fails with a mount error, the <code>prometheus.yml</code> file might be a directory. Check:</p>
+            <pre><code>dir D:\University\Coding\Web-Development\.Net-Community\LoadBalancer.DistributedAlgorithms2\prometheus\prometheus.yml</code></pre>
+            <p>If it’s <code>&lt;DIR&gt;</code>, delete and recreate as a file:</p>
+            <pre><code>rmdir D:\University\Coding\Web-Development\.Net-Community\LoadBalancer.DistributedAlgorithms2\prometheus\prometheus.yml
+echo > D:\University\Coding\Web-Development\.Net-Community\LoadBalancer.DistributedAlgorithms2\prometheus\prometheus.yml</code></pre>
+            <p>Add this content:</p>
+            <pre><code>global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'load_balancer'
+    static_configs:
+      - targets: ['load_balancer:3000']
+  - job_name: 'worker'
+    static_configs:
+      - targets: ['worker1:5002', 'worker2:5003', 'worker3:5004']</code></pre>
+        </li>
+        <li><strong>Network Issues</strong>:
+            <p>If images don’t pull, test connectivity:</p>
+            <pre><code>ping docker.io</code></pre>
+            <p>If it fails, try a VPN or disable your firewall temporarily:</p>
+            <pre><code>netsh advfirewall set allprofiles state off</code></pre>
+            <p>Re-enable it after:</p>
+            <pre><code>netsh advfirewall set allprofiles state on</code></pre>
+        </li>
+        <li><strong>Port Conflicts</strong>:
+            <pre><code>netstat -aon | findstr "3000"</code></pre>
+            <p>Adjust ports in <code>docker-compose.yml</code> if needed.</p>
+        </li>
+        <li><strong>Logs</strong>:
+            <pre><code>docker-compose logs &lt;service&gt;</code></pre>
+        </li>
+    </ul>
+
+    <h2>Contributing</h2>
+    <p>Feel free to fork this repo and submit pull requests! Ideas for improvement include:
+    <ul>
+        <li>Dynamic scaling with service discovery (e.g., Consul).</li>
+        <li>Adding HTTPS and securing Grafana.</li>
+        <li>Writing unit tests for the calculation logic.</li>
+        <li>Enhancing metrics (e.g., cache hit rates).</li>
+    </ul>
+    </p>
+
+    <h2>License</h2>
+    <p>This project is for educational purposes. Feel free to use it, but no formal license is applied—consider it a gift! If you’d like to add a license (e.g., MIT), let me know, and I can help.</p>
+
+    <h2>Acknowledgements</h2>
+    <p>Big thanks to the open-source community for tools like Docker, .NET, Redis, Prometheus, and Grafana. Also, a shoutout to myself for wrestling with network issues and directory mix-ups earlier today (around 05:00 AM EEST)—we got there in the end!</p>
+    <p class="note">Happy coding! <br> [Your Friendly Helper] <br> May 23, 2025</p>
+</body>
+</html>
