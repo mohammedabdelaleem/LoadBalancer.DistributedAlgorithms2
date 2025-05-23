@@ -64,3 +64,33 @@ This project simulates a distributed system where a load balancer distributes ca
 
 ```bash
 curl "http://localhost:3000/api/calculation/cal?n=1"
+```
+
+## Check Worker Health
+
+```bash
+curl http://localhost:5002/health
+```
+
+
+## View Metrics
+
+```bash
+curl http://localhost:3000/metrics
+```
+
+## Simulate a Worker Failure
+
+```bash
+docker-compose stop worker2
+```
+
+
+
+## Stop the System
+
+```bash
+docker-compose down
+```
+
+
