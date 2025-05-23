@@ -2,7 +2,7 @@
 
 Welcome to the **LoadBalancer.DistributedAlgorithms2** project! This is a fun and educational distributed system built with .NET 9, designed to explore load balancing, fault tolerance, and monitoring.
 
-> 🗓️ Created on **May 23, 2025**, this project distributes computational tasks across worker nodes, caches results with Redis, and monitors metrics with Prometheus and Grafana — all within Docker containers.
+> 🗓️ This project distributes computational tasks across worker nodes, caches results with Redis, and monitors metrics with Prometheus and Grafana — all within Docker containers.
 
 ---
 
