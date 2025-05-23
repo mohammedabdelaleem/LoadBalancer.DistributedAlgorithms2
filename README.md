@@ -40,7 +40,7 @@ This project simulates a distributed system where a load balancer distributes ca
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/your-username/LoadBalancer.DistributedAlgorithms2.git
+    git clone https://github.com/mohammedabdelaleem/LoadBalancer.DistributedAlgorithms2.git
     cd LoadBalancer.DistributedAlgorithms2
     ```
 
