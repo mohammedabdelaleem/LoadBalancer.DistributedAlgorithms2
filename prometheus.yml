@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'load_balancer'
+    static_configs:
+      - targets: ['load_balancer:3000']
+  - job_name: 'worker'
+    static_configs:
+      - targets: ['worker1:5002', 'worker2:5003', 'worker3:5004']

@@ -1,0 +1,79 @@
+#version: '3.8'
+services:
+  load_balancer:
+    build:
+      context: ./LoadBalancer
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - lb_network
+    depends_on:
+      - redis
+    environment:
+      - ASPNETCORE_URLS=http://+:3000
+      - IS_LOAD_BALANCER=true
+  worker1:
+    build:
+      context: ./LoadBalancer
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    networks:
+      - lb_network
+    depends_on:
+      - redis
+    environment:
+      - ASPNETCORE_URLS=http://+:5002
+      - IS_LOAD_BALANCER=false
+  worker2:
+    build:
+      context: ./LoadBalancer
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    networks:
+      - lb_network
+    depends_on:
+      - redis
+    environment:
+      - ASPNETCORE_URLS=http://+:5003
+      - IS_LOAD_BALANCER=false
+  worker3:
+    build:
+      context: ./LoadBalancer
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    networks:
+      - lb_network
+    depends_on:
+      - redis
+    environment:
+      - ASPNETCORE_URLS=http://+:5004
+      - IS_LOAD_BALANCER=false
+  redis:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+    networks:
+      - lb_network
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - D:/University/Coding/Web-Development/.Net-Community/LoadBalancer.DistributedAlgorithms2/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - lb_network
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - lb_network
+networks:
+  lb_network:
+    driver: bridge
